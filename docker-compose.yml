@@ -1,0 +1,48 @@
+# ====================================================================
+# Factify AI — Docker Compose Orchestration
+# ====================================================================
+
+services:
+  # MongoDB Persistence Layer
+  mongodb:
+    image: mongo:7.0
+    container_name: factify-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - factify_net
+
+  # Factify Web Application & REST API
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: factify-web
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/
+      - MONGODB_DB_NAME=factify_db
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-qwen/qwen3.8-27b}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GNEWS_API_KEY=${GNEWS_API_KEY}
+      - JWT_SECRET=${JWT_SECRET:-factify_super_secret_key_2026}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@factify.com}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-AdminSecure2026!}
+    depends_on:
+      - mongodb
+    networks:
+      - factify_net
+
+networks:
+  factify_net:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local

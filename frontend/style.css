@@ -1,0 +1,4 @@
+/* Main stylesheet - imports all partials */
+/* Yahan se sab CSS files import ho rahi hain */
+@import url('base.css');
+@import url('components.css');

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="AI-powered Factify — Analyze news articles for authenticity, emotional manipulation, propaganda, and credibility using advanced machine learning." />
+  <title>AI Factify — Verify Before You Believe</title>
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+  <!-- Google Fonts import kiye gaye hain -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <!-- CSS file link ki hai -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- PDF Generation Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+  <!-- ============================================ -->
+  <!--  TOAST CONTAINER — Notifications ke liye -->
+  <!-- ============================================ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ============================================ -->
+  <!--  PARTICLES CANVAS — Background mein chalti hui animation -->
+  <!-- ============================================ -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ============================================ -->
+  <!--  NAVBAR — Menu bar aur Logo -->
+  <!-- ============================================ -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Factify<span class="logo-ai">AI</span></span>
+      </a>
+      <!-- Menu links -->
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link active" data-i18n="nav_home">Home</a></li>
+        <li><a href="#analyzer" class="nav-link" data-i18n="nav_analyze">Analyze</a></li>
+        <li><a href="#live-news" class="nav-link" data-i18n="nav_live">Live News</a></li>
+        <li><a href="#how-it-works" class="nav-link" data-i18n="nav_how">How It Works</a></li>
+        <li><a href="#reviews" class="nav-link" data-i18n="nav_reviews">Reviews</a></li>
+        <li><a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+
+      <!-- Language Switcher -->
+      <select id="lang-switcher" class="lang-switcher" aria-label="Language Switcher">
+        <option value="en">🇺🇸 EN</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="ur">🇵🇰 UR</option>
+        <option value="fr">🇫🇷 FR</option>
+      </select>
+
+      <!-- Dark mode aur light mode ka button -->
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon">🌙</span>
+      </button>
+
+      <!-- USER AUTH MENU -->
+      <div class="auth-buttons" id="auth-buttons">
+        <button class="btn btn-ghost" id="btn-login-nav" data-i18n="btn_login">Login</button>
+        <button class="btn btn-primary btn-sm" id="btn-signup-nav" data-i18n="btn_signup">Sign Up</button>
+      </div>
+
+      <div class="user-menu" id="user-menu" style="display:none;">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-dropdown" id="user-dropdown" style="display:none;">
+          <div class="dropdown-header" id="dropdown-user-name">User Name</div>
+          <div class="dropdown-email" id="dropdown-user-email">email@example.com</div>
+          <hr class="dropdown-divider">
+          <button class="dropdown-item" id="btn-user-dashboard-nav" data-i18n="btn_user_dash">📊 My Dashboard</button>
+          <button class="dropdown-item" id="btn-admin-nav" style="display:none;" data-i18n="btn_admin_dash">🛡️ Admin Dashboard</button>
+          <button class="dropdown-item" id="btn-logout" data-i18n="btn_logout">🚪 Logout</button>
+        </div>
+      </div>
+
+      <!-- Mobile ke liye menu icon -->
+      <button id="hamburger" class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================================ -->
+  <!--  HERO SECTION — Main front screen -->
+  <!-- ============================================ -->
+  <section id="hero" class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span data-i18n="hero_badge">AI-Powered Intelligence</span>
+      </div>
+      <!-- Typing animation wali heading -->
+      <h1 class="hero-title">
+        <span class="title-line" data-i18n="hero_title">AI Fake News</span>
+        <span class="title-line gradient-text" id="typed-text"></span>
+        <span class="typing-cursor">|</span>
+      </h1>
+      <p class="hero-subtitle">
+        <span data-i18n="hero_subtitle">Harness the power of advanced machine learning to verify news authenticity,
+        detect emotional manipulation, and uncover AI-generated propaganda — all in seconds.</span>
+      </p>
+      <!-- Buttons -->
+      <div class="hero-buttons">
+        <a href="#analyzer" class="btn btn-primary" id="btn-analyze-hero">
+          <span class="btn-icon">⚡</span> <span data-i18n="btn_analyze_hero">Analyze News</span>
+          <span class="btn-ripple"></span>
+        </a>
+        <a href="#how-it-works" class="btn btn-secondary" id="btn-learn-more">
+          <span class="btn-icon">◎</span> <span data-i18n="btn_learn_more">Learn More</span>
+        </a>
+      </div>
+      <!-- Stats counters -->
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number" data-target="50000">0</span>
+          <span class="stat-label" data-i18n="stat_articles">Articles Analyzed</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="97">0</span>
+          <span class="stat-label" data-i18n="stat_accuracy">% Accuracy</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" data-target="12">0</span>
+          <span class="stat-label" data-i18n="stat_models">AI Models</span>
+        </div>
+      </div>
+    </div>
+    <!-- Floating rings -->
+    <div class="hero-visual">
+      <div class="orbit-ring ring-1"></div>
+      <div class="orbit-ring ring-2"></div>
+      <div class="orbit-ring ring-3"></div>
+      <div class="core-glow"></div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--  ANALYZER SECTION — News check karne ka area -->
+  <!-- ============================================ -->
+  <section id="analyzer" class="analyzer-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="sec_verify_tag">AI Verification Engine</span>
+        <h2 class="section-title" data-i18n="sec_verify_title">Verify Content & Articles</h2>
+        <p class="section-desc" data-i18n="sec_verify_desc">Paste the link of any news article or input direct text content below. Our AI will
+          analyze the credibility and logic in real-time.</p>
+      </div>
+
+      <div class="analyzer-card glass-card">
+        <!-- Lock Overlay for Unauthenticated Users -->
+        <div class="lock-overlay" id="analyzer-lock">
+          <div class="lock-overlay-content">
+            <span class="lock-icon">🔒</span>
+            <h3 data-i18n="auth_req_title">Authentication Required</h3>
+            <p data-i18n="auth_req_desc">Unlock the Factify Verification Engine to scan articles and text contents for misinformation.</p>
+            <div class="lock-buttons">
+              <button class="btn btn-primary btn-sm btn-lock-login" data-i18n="btn_lock_login">Login</button>
+              <button class="btn btn-secondary btn-sm btn-lock-signup" data-i18n="btn_lock_signup">Sign Up</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE TOGGLE (URL vs TEXT) -->
+        <div class="analyzer-mode-toggle">
+          <button class="mode-btn active" id="mode-url" data-mode="url" data-i18n="mode_url">🌐 Analyze URL</button>
+          <button class="mode-btn" id="mode-text" data-mode="text" data-i18n="mode_text">📝 Check Text</button>
+          <button class="mode-btn" id="mode-image" data-mode="image" data-i18n="mode_image">📷 Scan Image</button>
+        </div>
+
+        <!-- URL Input Container -->
+        <div class="url-analysis-container" id="url-analysis-container">
+          <div class="url-input-wrapper main-url-input">
+            <span class="url-icon">🌐</span>
+            <input type="url" id="url-input" class="url-input" data-i18n-placeholder="ph_url_input" placeholder="https://news-site.com/article-slug-here..."
+              autofocus />
+          </div>
+          <p class="url-hint" data-i18n="url_hint">Supported sources: Global news outlets, blogs, and social media articles.</p>
+        </div>
+
+        <!-- Text Input Container -->
+        <div class="text-analysis-container" id="text-analysis-container" style="display:none;">
+          <textarea id="text-input" class="news-textarea"
+            data-i18n-placeholder="ph_text_input" placeholder="Paste any news article, social media post, or text content here to check its authenticity...&#10;&#10;Our AI will analyze the linguistic patterns, emotional manipulation, propaganda indicators, and overall credibility of the content."
+            rows="8"></textarea>
+          <p class="url-hint" data-i18n="text_hint">Paste any text — news articles, social media posts, blog content, or suspected
+            AI-generated text.</p>
+        </div>
+
+        <!-- Image Input Container -->
+        <div class="image-analysis-container" id="image-analysis-container" style="display:none;">
+          <div class="image-upload-wrapper" id="image-upload-wrapper" style="position: relative; padding: 20px;">
+            <div id="image-upload-prompt">
+              <span class="upload-icon" style="font-size: 2rem; display: block; margin-bottom: 10px;">📸</span>
+              <p data-i18n="upload_prompt">Drag and drop a screenshot here, or click to select</p>
+              <p class="url-hint" data-i18n="upload_hint">Supports Facebook, X, Instagram, TikTok, WhatsApp, News Sites (PNG, JPG, WEBP)</p>
+            </div>
+            <input type="file" id="image-input" class="image-input" accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none;" />
+            <div id="image-preview-container" style="display:none; position: relative; margin-top: 10px; text-align: center;">
+              <img id="image-preview" src="" alt="Image Preview" style="max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid var(--border-color);" />
+              <button id="btn-remove-image" class="btn btn-sm btn-ghost" style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; padding: 5px 10px; border: none;">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons (Analyze, Clear) -->
+        <div class="analyzer-actions center-actions">
+          <button class="btn btn-primary btn-analyze-large" id="btn-analyze">
+            <span class="btn-icon">🛡️</span> <span data-i18n="btn_analyze">Run AI Authenticity Check</span>
+            <span class="btn-ripple"></span>
+          </button>
+          <button class="btn btn-ghost" id="btn-clear">
+            <span class="btn-icon">✕</span> <span data-i18n="btn_clear">Reset</span>
+          </button>
+          <button class="btn btn-ghost" id="btn-example">
+            <span class="btn-icon">🔗</span> <span data-i18n="btn_example">Try Example</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading Animation -->
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="loader-container">
+          <div class="ai-loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <span class="loader-text" data-i18n="loader_text">Extracting & Analyzing...</span>
+          </div>
+          <p class="loader-status" id="loader-status" data-i18n="loader_status">Connecting to source...</p>
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!--  RESULTS SECTION — AI Results -->
+      <!-- ======================================== -->
+      <div class="results-section" id="results-section" style="display:none;">
+        <div class="results-grid-top">
+          <!-- Verdict -->
+          <div class="result-card glass-card prediction-card" id="prediction-card">
+            <div class="card-header">
+              <span class="card-icon">⚖️</span>
+              <h3 data-i18n="card_verdict">Authenticity Verdict</h3>
+            </div>
+            <div class="prediction-badge" id="prediction-badge">
+              <span class="prediction-label" id="prediction-label">—</span>
+            </div>
+            <!-- Risk Gauge -->
+            <div class="risk-gauge" id="risk-gauge" style="margin-top: 1rem; text-align: center; display: none;">
+              <span class="risk-label" id="risk-label"
+                style="font-weight: bold; padding: 4px 12px; border-radius: 20px;"></span>
+            </div>
+            <p class="prediction-subtitle" id="prediction-subtitle"></p>
+          </div>
+
+          <!-- Confidence Meter -->
+          <div class="result-card glass-card confidence-card">
+            <div class="card-header">
+              <span class="card-icon">📊</span>
+              <h3 data-i18n="card_confidence">AI Confidence</h3>
+            </div>
+            <div class="circular-meter-wrapper">
+              <svg class="circular-meter" viewBox="0 0 200 200" id="confidence-meter">
+                <circle class="meter-bg" cx="100" cy="100" r="85" />
+                <circle class="meter-fill" cx="100" cy="100" r="85" id="meter-fill" />
+                <text x="100" y="100" class="meter-text" id="meter-text">0%</text>
+                <text x="100" y="125" class="meter-sublabel" data-i18n="meter_sublabel">Reliability</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Credibility Score -->
+          <div class="result-card glass-card credibility-card">
+            <div class="card-header">
+              <span class="card-icon">🛡️</span>
+              <h3 data-i18n="card_trust">Trust Index</h3>
+            </div>
+            <div class="trust-bar-wrapper">
+              <div class="trust-bar">
+                <div class="trust-fill" id="trust-fill"></div>
+              </div>
+              <span class="trust-score" id="trust-score">0%</span>
+            </div>
+            <p class="trust-label" id="trust-label" data-i18n="trust_calc">Calculating trust...</p>
+          </div>
+        </div>
+
+        <!-- Image Analysis Context (Only shown for images) -->
+        <div class="result-card glass-card image-context-card" id="image-context-card" style="display:none; margin-bottom: 1rem;">
+          <div class="card-header">
+            <span class="card-icon">🖼️</span>
+            <h3 data-i18n="card_img_context">Extracted Image Context</h3>
+          </div>
+          <div class="image-context-content" style="font-size: 0.95rem; line-height: 1.5;">
+            <div style="text-align: center; margin-bottom: 15px;">
+              <p style="font-weight: bold; margin-bottom: 5px;">Uploaded Image:</p>
+              <img id="img-result-preview" src="" alt="Uploaded Image" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border-color); display: none; margin: 0 auto;" />
+            </div>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_source">Detected Source:</strong> <span id="img-source-badge" class="badge" style="background: var(--bg-hover); padding: 4px 10px; border-radius: 20px; font-weight: 600;">Unknown</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_platform">Detected Platform:</strong> <span id="img-platform" style="color: var(--text-color);">—</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_author">Author:</strong> <span id="img-author" style="color: var(--text-color);">—</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_date">Date:</strong> <span id="img-date" style="color: var(--text-color);">—</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_quality">Image Quality:</strong> <span id="img-quality" style="color: var(--text-color);">—</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_headline">Extracted Headline:</strong> <span id="img-extracted-headline" style="color: var(--text-color);">—</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_claim">Main Claim Checked:</strong> <span id="img-extracted-claim" style="color: var(--text-color);">—</span></p>
+            <p style="margin-bottom: 0.5rem;"><strong data-i18n="img_summary">Context Summary:</strong> <span id="img-context-summary" style="color: var(--text-color);">—</span></p>
+            <div style="margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 6px;">
+              <p style="margin-bottom: 5px;"><strong data-i18n="img_ocr">OCR Text:</strong></p>
+              <p id="img-ocr-text" style="color: var(--text-color); font-size: 0.85rem; max-height: 100px; overflow-y: auto; white-space: pre-wrap;">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evidence Based Reasoning (LLM) -->
+        <div class="result-card glass-card evidence-card" id="evidence-card" style="display:none; margin-bottom: 1rem;">
+          <div class="card-header">
+            <span class="card-icon">🔍</span>
+            <h3 data-i18n="card_evidence">Evidence-Based Summary</h3>
+          </div>
+          <p class="evidence-text" id="evidence-text"></p>
+        </div>
+
+        <!-- Claim Extraction -->
+        <div class="result-card glass-card claims-card" id="claims-card" style="display:none; margin-bottom: 1rem;">
+          <div class="card-header">
+            <span class="card-icon">🎯</span>
+            <h3 data-i18n="card_claims">Extracted Claims Verification</h3>
+          </div>
+          <ul class="claims-list" id="claims-list" style="list-style: none; padding: 0;"></ul>
+        </div>
+
+        <!-- AI Reasoning (ML Legacy) -->
+        <div class="result-card glass-card reasoning-card">
+          <div class="card-header">
+            <span class="card-icon">🧠</span>
+            <h3 data-i18n="card_structural">Structural Analysis</h3>
+          </div>
+          <p class="reasoning-text" id="reasoning-text"></p>
+        </div>
+
+        <!-- Manipulation aur Emotions -->
+        <div class="results-grid-mid">
+          <!-- Manipulation Tags -->
+          <div class="result-card glass-card manipulation-card">
+            <div class="card-header">
+              <span class="card-icon">🎭</span>
+              <h3 data-i18n="card_linguistic">Linguistic Patterns</h3>
+            </div>
+            <div class="manipulation-tags" id="manipulation-tags"></div>
+          </div>
+
+          <!-- Emotion Chart -->
+          <div class="result-card glass-card emotion-card">
+            <div class="card-header">
+              <span class="card-icon">💢</span>
+              <h3 data-i18n="card_emotion">Emotional Load</h3>
+            </div>
+            <canvas id="emotion-chart" width="400" height="220"></canvas>
+          </div>
+        </div>
+
+        <!-- Suspicious Sentences Highlighting -->
+        <div class="result-card glass-card highlight-card">
+          <div class="card-header">
+            <span class="card-icon">🔎</span>
+            <h3 data-i18n="card_redflags">Content Red Flags</h3>
+          </div>
+          <div class="highlighted-text" id="highlighted-text"></div>
+        </div>
+
+        <!-- Fact Check Suggestions -->
+        <div class="result-card glass-card factcheck-card">
+          <div class="card-header">
+            <span class="card-icon">✅</span>
+            <h3 data-i18n="card_factcheck">Verification Path</h3>
+          </div>
+          <ul class="factcheck-list" id="factcheck-list"></ul>
+        </div>
+
+        <!-- Cross-Reference Web Sources -->
+        <div class="result-card glass-card cross-reference-card" id="cross-reference-card"
+          style="display:none; margin-top: 1.5rem;">
+          <div class="card-header">
+            <span class="card-icon">🌐</span>
+            <h3 data-i18n="card_crossref">Cross-Reference Sources</h3>
+          </div>
+          <div class="cross-reference-list" id="cross-reference-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Export aur New Analysis buttons -->
+        <div class="results-actions">
+          <button class="btn btn-secondary" id="btn-bookmark-analysis" style="display:none;">
+            <span class="btn-icon">⭐</span> <span data-i18n="btn_bookmark">Save Bookmark</span>
+          </button>
+          <button class="btn btn-primary" id="btn-export-pdf">
+            <span class="btn-icon">📄</span> <span data-i18n="btn_pdf">Download Analysis PDF</span>
+          </button>
+          <button class="btn btn-ghost" id="btn-new-analysis">
+            <span class="btn-icon">🔄</span> <span data-i18n="btn_new">New Analysis Check</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+
+
+  <!-- ============================================ -->
+  <!--  TRENDING MISINFORMATION ALERTS -->
+  <!-- ============================================ -->
+  <section id="trending-alerts" class="trending-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag" style="background: rgba(255, 71, 87, 0.1); color: #ff4757;" data-i18n="sec_trending_tag">Global Alerts</span>
+        <h2 class="section-title" data-i18n="sec_trending_title">Trending Misinformation</h2>
+        <p class="section-desc" data-i18n="sec_trending_desc">The most frequent fake news claims currently circulating worldwide.</p>
+      </div>
+      <div class="trending-grid" id="trending-grid"
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <!-- Populated via API -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--  LIVE NEWS SECTION — Latest khabrein -->
+  <!-- ============================================ -->
+  <section id="live-news" class="live-news-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="sec_global_tag">Verified Stream</span>
+        <h2 class="section-title" data-i18n="sec_global_title">Global News Monitoring</h2>
+        <p class="section-desc" data-i18n="sec_global_desc">Real-time headlines with pre-calculated AI Trust Indexes.</p>
+      </div>
+
+      <div class="news-content-wrapper" id="news-content-wrapper">
+        <!-- Lock Overlay for Unauthenticated Users -->
+        <div class="lock-overlay" id="news-lock">
+          <div class="lock-overlay-content">
+            <span class="lock-icon">🔒</span>
+            <h3 data-i18n="auth_req_title">Authentication Required</h3>
+            <p data-i18n="auth_req_desc_news">Create an account or log in to unlock the real-time global news feed and view pre-calculated AI Trust
+              Index scores.</p>
+            <div class="lock-buttons">
+              <button class="btn btn-primary btn-sm btn-lock-login" data-i18n="btn_lock_login">Login</button>
+              <button class="btn btn-secondary btn-sm btn-lock-signup" data-i18n="btn_lock_signup">Sign Up</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="news-controls glass-card">
+          <div class="news-search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="news-search" class="news-search" data-i18n-placeholder="ph_news_search" placeholder="Filter global stream..." />
+          </div>
+          <div class="news-filters">
+            <select id="news-category" class="news-filter-select">
+              <option value="general" data-i18n="cat_general">Global Focus</option>
+              <option value="technology" data-i18n="cat_tech">Tech & AI</option>
+              <option value="science" data-i18n="cat_science">Scientific Research</option>
+              <option value="health" data-i18n="cat_health">Health & Bio</option>
+              <option value="business" data-i18n="cat_business">Market Analysis</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="news-grid" id="news-grid"></div>
+        <div class="news-loading" id="news-loading" style="display:none;">
+          <div class="mini-loader"></div>
+          <span data-i18n="news_loading">Syncing with news nodes...</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--  HOW IT WORKS SECTION — System logic -->
+  <!-- ============================================ -->
+  <section id="how-it-works" class="how-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="sec_process_tag">Powerful AI Pipeline</span>
+        <h2 class="section-title" data-i18n="sec_process_title">The Verification Process</h2>
+        <p class="section-desc" data-i18n="sec_process_desc">Our system performs multi-vector analysis to determine authenticity.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card glass-card" data-step="1">
+          <div class="step-number">01</div>
+          <div class="step-icon">🌐</div>
+          <h3 data-i18n="step1_title">Source Scraping</h3>
+          <p data-i18n="step1_desc">We securely fetch content, metadata, and headers directly from the article's source domain.</p>
+        </div>
+        <div class="step-card glass-card" data-step="2">
+          <div class="step-number">02</div>
+          <div class="step-icon">🏛️</div>
+          <h3 data-i18n="step2_title">Domain Reputation</h3>
+          <p data-i18n="step2_desc">Cross-referencing the source against global databases of trusted and suspicious media entities.</p>
+        </div>
+        <div class="step-card glass-card" data-step="3">
+          <div class="step-number">03</div>
+          <div class="step-icon">🧩</div>
+          <h3 data-i18n="step3_title">Consistency Audit</h3>
+          <p data-i18n="step3_desc">Comparing the headline logic against the body content to detect clickbait and misleading framing.</p>
+        </div>
+        <div class="step-card glass-card" data-step="4">
+          <div class="step-number">04</div>
+          <div class="step-icon">⚖️</div>
+          <h3 data-i18n="step4_title">AI Decision</h3>
+          <p data-i18n="step4_desc">Our trained ML model analyzes the linguistic structure to provide a final authenticity verdict.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  
+
+  <!-- ============================================ -->
+  <!--  REVIEWS / FEEDBACK SECTION -->
+  <!-- ============================================ -->
+  <section id="reviews" class="contact-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="sec_reviews_tag">Community Voice</span>
+        <h2 class="section-title" data-i18n="sec_reviews_title">Reviews & Feedback</h2>
+        <p class="section-desc" data-i18n="sec_reviews_desc">Share your experience or submit feedback to make Factify more accurate and reliable.
+        </p>
+      </div>
+      <div class="contact-grid">
+        <!-- Contact Form -->
+        <div class="contact-form-card glass-card">
+          <form id="feedback-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="feedback-name" data-i18n="label_name">Your Name</label>
+                <input type="text" id="feedback-name" class="form-input" data-i18n-placeholder="ph_name" placeholder="Enter name" required />
+              </div>
+              <div class="form-group">
+                <label for="feedback-email" data-i18n="label_email">Your Email</label>
+                <input type="email" id="feedback-email" class="form-input" data-i18n-placeholder="ph_email" placeholder="you@example.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="feedback-subject" data-i18n="label_subject">Subject</label>
+              <input type="text" id="feedback-subject" class="form-input" data-i18n-placeholder="ph_subject" placeholder="Subject description" required />
+            </div>
+            <div class="form-group">
+              <label for="feedback-message" data-i18n="label_message">Message</label>
+              <textarea id="feedback-message" class="form-input form-textarea"
+                data-i18n-placeholder="ph_message" placeholder="Tell us your feedback or ask a question..." rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+              <label data-i18n="label_rating">Rate Your Experience</label>
+              <div class="star-rating" id="star-rating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+              </div>
+              <input type="hidden" id="feedback-rating" value="0" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+              <span class="btn-icon">📨</span> <span data-i18n="btn_submit_feedback">Submit Feedback</span>
+            </button>
+          </form>
+        </div>
+        <!-- Testimonials/Feedback Feed -->
+        <div class="testimonials-card glass-card">
+          <div class="testimonials-header">
+            <span class="card-icon">💬</span>
+            <h3 data-i18n="recent_feedback">Recent Users Feedback</h3>
+          </div>
+          <div class="testimonials-list" id="testimonials-list">
+            <div class="testimonial-placeholder" data-i18n="feedback_empty">No feedback yet. Be the first! 🚀</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--  CONTACT SECTION -->
+  <!-- ============================================ -->
+  <section id="contact" class="contact-section" style="padding-top: 2rem;">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag" data-i18n="sec_contact_tag">Get In Touch</span>
+        <h2 class="section-title" data-i18n="sec_contact_title">Contact Us</h2>
+        <p class="section-desc" data-i18n="sec_contact_desc">Have a question or need support? Send us a message directly.
+        </p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-form-card glass-card">
+          <form id="contact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name" data-i18n="label_name">Your Name</label>
+                <input type="text" id="contact-name" class="form-input" data-i18n-placeholder="ph_name" placeholder="Enter name" required />
+              </div>
+              <div class="form-group">
+                <label for="contact-email" data-i18n="label_email">Your Email</label>
+                <input type="email" id="contact-email" class="form-input" data-i18n-placeholder="ph_email" placeholder="you@example.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="contact-subject" data-i18n="label_subject">Subject</label>
+              <input type="text" id="contact-subject" class="form-input" data-i18n-placeholder="ph_subject" placeholder="Subject description" required />
+            </div>
+            <div class="form-group">
+              <label for="contact-message" data-i18n="label_message">Message</label>
+              <textarea id="contact-message" class="form-input form-textarea" data-i18n-placeholder="ph_contact_msg" placeholder="How can we help you?"
+                rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+              <span class="btn-icon">✉️</span> <span data-i18n="btn_send_message">Send Message</span>
+            </button>
+          </form>
+        </div>
+
+        <div class="contact-map-card glass-card"
+          style="overflow: hidden; min-height: 300px; display: flex; border-radius: var(--radius);">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115291.60533602507!2d-74.13524673898288!3d40.70562584166687!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1714041234567!5m2!1sen!2sin"
+            width="100%" height="100%" style="border:0; flex-grow: 1;" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--  FOOTER — Niche wala hissa -->
+  <!-- ============================================ -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Factify<span class="logo-ai">AI</span></span>
+        <p class="footer-tagline" data-i18n="footer_tagline">Verify before you believe.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#hero">Home</a>
+        <a href="#analyzer">Analyze</a>
+        <a href="#live-news">Live News</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <p class="footer-copy" data-i18n="footer_copy">&copy; 2026 Factify. Built with intelligence.</p>
+    </div>
+  </footer>
+
+  <!-- ============================================ -->
+  <!--  AUTHENTICATION MODALS -->
+  <!-- ============================================ -->
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="login-modal" style="display:none;">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h2 data-i18n="login_welcome">Welcome Back</h2>
+        <p data-i18n="login_desc">Login to your Factify account</p>
+        <button class="modal-close" id="login-modal-close">✕</button>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" class="form-input" data-i18n-placeholder="ph_email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="label_pass">Password</label>
+          <div class="password-wrapper" style="position: relative;">
+            <input type="password" id="login-password" class="form-input" data-i18n-placeholder="ph_pass" placeholder="••••••••" required
+              style="padding-right: 40px;">
+            <span class="toggle-password"
+              style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim);">👁️</span>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-login-submit">Login</button>
+        <p class="modal-switch"><a href="#" id="switch-to-signup" data-i18n="switch_signup">Don't have an account? Sign Up</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal-overlay" id="signup-modal" style="display:none;">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h2 data-i18n="signup_welcome">Create Account</h2>
+        <p data-i18n="signup_desc">Join Factify to save your verification history</p>
+        <button class="modal-close" id="signup-modal-close">✕</button>
+      </div>
+      <form id="signup-form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signup-name" class="form-input" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="signup-email" class="form-input" data-i18n-placeholder="ph_email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="label_pass">Password</label>
+          <div class="password-wrapper" style="position: relative;">
+            <input type="password" id="signup-password" class="form-input"
+              data-i18n-placeholder="ph_new_pass" placeholder="Min 8 chars, 1 uppercase, 1 number" required minlength="8" style="padding-right: 40px;">
+            <span class="toggle-password"
+              style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim);">👁️</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="label_confirm">Confirm Password</label>
+          <div class="password-wrapper" style="position: relative;">
+            <input type="password" id="signup-confirm-password" class="form-input" data-i18n-placeholder="ph_confirm" placeholder="Confirm your password"
+              required minlength="8" style="padding-right: 40px;">
+            <span class="toggle-password"
+              style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim);">👁️</span>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-signup-submit">Create Account</button>
+        <p class="modal-switch"><a href="#" id="switch-to-login" data-i18n="switch_login">Already have an account? Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  AI CHATBOT ASSISTANT — Help ke liye bot -->
+  <!-- ============================================ -->
+  <div class="chatbot-toggle" id="chatbot-toggle">
+    <span>🤖</span>
+  </div>
+  <div class="chatbot-window glass-card" id="chatbot-window" style="display:none;">
+    <div class="chatbot-header">
+      <span data-i18n="chat_title">🤖 Factify Assistant</span>
+      <button class="chatbot-close" id="chatbot-close">✕</button>
+    </div>
+    <div class="chatbot-messages" id="chatbot-messages">
+      <div class="chat-msg bot" data-i18n="chat_welcome">Hi! I'm Factify. Ask me anything about fake news detection. 🛡️</div>
+    </div>
+    <div class="chatbot-suggestions" id="chatbot-suggestions" style="display: none;">
+      <!-- Populated via JS -->
+    </div>
+    <div class="chatbot-input-wrapper">
+      <input type="text" id="chatbot-input" class="chatbot-input" data-i18n-placeholder="chat_placeholder" placeholder="Ask something..." />
+      <button class="chatbot-send" id="chatbot-send">➤</button>
+    </div>
+  </div>
+
+  <!-- JavaScript file link ki hai -->
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

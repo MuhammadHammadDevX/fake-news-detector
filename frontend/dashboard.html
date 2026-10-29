@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    try {
+      const user = JSON.parse(localStorage.getItem('factify_user'));
+      if (!user) {
+        window.location.href = '/?error=unauthorized';
+      } else if (user.role === 'admin') {
+        window.location.href = '/admin/dashboard';
+      }
+    } catch (e) {
+      window.location.href = '/?error=unauthorized';
+    }
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="AI-powered Factify — Analyze news articles for authenticity, emotional manipulation, propaganda, and credibility using advanced machine learning." />
+  <title>AI Factify — Verify Before You Believe</title>
+  <!-- Favicon -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+  <!-- Google Fonts import kiye gaye hain -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <!-- CSS file link ki hai -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="user_dashboard.css" />
+  <!-- PDF Generation Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+  <!-- ============================================ -->
+  <canvas id="particles-canvas"></canvas>
+
+<nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Factify<span class="logo-ai">AI</span></span>
+      </a>
+      <!-- Menu links -->
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link active" data-i18n="nav_home">Home</a></li>
+        <li><a href="/#analyzer" class="nav-link" data-i18n="nav_analyze">Analyze</a></li>
+        <li><a href="/#live-news" class="nav-link" data-i18n="nav_live">Live News</a></li>
+        <li><a href="/#how-it-works" class="nav-link" data-i18n="nav_how">How It Works</a></li>
+        <li><a href="/#reviews" class="nav-link" data-i18n="nav_reviews">Reviews</a></li>
+        <li><a href="/#contact" class="nav-link" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+
+      <!-- Language Switcher -->
+      <select id="lang-switcher" class="lang-switcher" aria-label="Language Switcher">
+        <option value="en">🇺🇸 EN</option>
+        <option value="es">🇪🇸 ES</option>
+        <option value="ur">🇵🇰 UR</option>
+        <option value="fr">🇫🇷 FR</option>
+      </select>
+
+      <!-- Dark mode aur light mode ka button -->
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon">🌙</span>
+      </button>
+
+      <!-- USER AUTH MENU -->
+      <div class="auth-buttons" id="auth-buttons">
+        <button class="btn btn-ghost" id="btn-login-nav">Login</button>
+        <button class="btn btn-primary btn-sm" id="btn-signup-nav">Sign Up</button>
+      </div>
+
+      <div class="user-menu" id="user-menu" style="display:none;">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-dropdown" id="user-dropdown" style="display:none;">
+          <div class="dropdown-header" id="dropdown-user-name">User Name</div>
+          <div class="dropdown-email" id="dropdown-user-email">email@example.com</div>
+          <hr class="dropdown-divider">
+          <button class="dropdown-item" id="btn-user-dashboard-nav">📊 My Dashboard</button>
+          <button class="dropdown-item" id="btn-admin-nav" style="display:none;">🛡️ Admin Dashboard</button>
+          <button class="dropdown-item" id="btn-logout">🚪 Logout</button>
+        </div>
+      </div>
+
+      <!-- Mobile ke liye menu icon -->
+      <button id="hamburger" class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+<main class="user-layout">
+  <!-- USER SIDEBAR -->
+  <aside class="user-sidebar glass-card" id="user-sidebar">
+    <button class="sidebar-close-btn" id="user-sidebar-close">✕</button>
+    
+    <div class="sidebar-heading" data-i18n="dash_analytics">Analytics</div>
+    <button class="user-sidebar-link side-tab active" data-tab="overview">
+      <span style="font-size: 1.2rem;">📊</span> 
+      <span data-i18n="dash_overview">Overview</span>
+    </button>
+    <button class="user-sidebar-link side-tab" data-tab="bookmarks">
+      <span style="font-size: 1.2rem;">🔖</span> 
+      <span data-i18n="dash_bookmarks">Saved Analyses</span>
+    </button>
+
+    <div class="sidebar-heading" style="margin-top: 1.5rem;" data-i18n="dash_account">Account</div>
+    <button class="user-sidebar-link side-tab" data-tab="profile">
+      <span style="font-size: 1.2rem;">👤</span> 
+      <span data-i18n="dash_profile">Profile</span>
+    </button>
+    <button class="user-sidebar-link side-tab" data-tab="settings">
+      <span style="font-size: 1.2rem;">⚙️</span> 
+      <span data-i18n="dash_settings">Settings</span>
+    </button>
+  </aside>
+
+  <!-- USER MAIN CONTENT -->
+  <div class="user-main">
+    <div class="user-mobile-topbar">
+      <h3 style="margin: 0; font-size: 1.2rem;" data-i18n="my_dash">My Dashboard</h3>
+      <button id="user-sidebar-toggle" style="background:none; border:none; color:var(--text); font-size:1.5rem; cursor:pointer;">☰</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="user-tab-content active">
+      <header class="dashboard-page-header">
+        <h2 class="dashboard-page-title" data-i18n="dash_overview_title">Detection Overview</h2>
+        <p class="dashboard-page-desc" data-i18n="dash_overview_desc">Track your scanning statistics and recent search history.</p>
+      </header>
+      
+      <!-- STATS -->
+      <div class="user-stats-grid">
+        <div class="user-stat-card glass-card">
+          <div class="user-stat-value" id="stat-total">0</div>
+          <div class="user-stat-label" data-i18n="dash_stat_total">Total Scans</div>
+        </div>
+        <div class="user-stat-card danger glass-card">
+          <div class="user-stat-value" id="stat-fake">0</div>
+          <div class="user-stat-label" data-i18n="dash_stat_fake">Fake Found</div>
+        </div>
+        <div class="user-stat-card warning glass-card">
+          <div class="user-stat-value" id="stat-bookmarks">0</div>
+          <div class="user-stat-label" data-i18n="dash_stat_book">Bookmarks</div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="content-card glass-card">
+        <div class="content-card-header">
+          <h3 class="content-card-title" data-i18n="dash_history">Audit Trail</h3>
+          <button class="btn btn-ghost btn-sm" id="btn-clear-history" data-i18n="btn_clear_history">Clear History</button>
+        </div>
+        <div class="data-list" id="history-list">
+          <p style="color:var(--text-dim);">No audit trail yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKMARKS TAB -->
+    <div id="tab-bookmarks" class="user-tab-content">
+      <header class="dashboard-page-header">
+        <h2 class="dashboard-page-title" data-i18n="dash_bookmarks_title">Saved Analyses</h2>
+        <p class="dashboard-page-desc" data-i18n="dash_bookmarks_desc">Your bookmarked verification reports for quick reference.</p>
+      </header>
+      
+      <div class="content-card glass-card">
+        <div class="data-list" id="bookmarks-list">
+          <p style="color:var(--text-dim);">No bookmarks yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="tab-profile" class="user-tab-content">
+      <header class="dashboard-page-header">
+        <h2 class="dashboard-page-title" data-i18n="dash_profile_title">Profile Settings</h2>
+        <p class="dashboard-page-desc" data-i18n="dash_profile_desc">Manage your personal information.</p>
+      </header>
+      
+      <div class="content-card glass-card" style="max-width: 600px;">
+        <h3 class="content-card-title" style="margin-bottom: 1.5rem;" data-i18n="profile_info">Personal Information</h3>
+        <form id="profile-update-form">
+          <div class="user-form-group">
+            <label class="user-form-label" data-i18n="label_fullname">Full Name</label>
+            <input type="text" id="profile-name" class="user-form-input" required>
+          </div>
+          <div class="user-form-group">
+            <label class="user-form-label" data-i18n="label_email">Email Address</label>
+            <input type="email" id="profile-email" class="user-form-input" disabled>
+            <small style="color:var(--text-dim); display:block; margin-top:5px;" data-i18n="email_cant_change">Email cannot be changed.</small>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-update-profile" style="width: 100%;" data-i18n="btn_save_profile">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB (Split from Profile) -->
+    <div id="tab-settings" class="user-tab-content">
+      <header class="dashboard-page-header">
+        <h2 class="dashboard-page-title" data-i18n="dash_sec_title">Security & Preferences</h2>
+        <p class="dashboard-page-desc" data-i18n="dash_sec_desc">Manage your account security.</p>
+      </header>
+      
+      <div class="content-card glass-card" style="max-width: 600px;">
+        <h3 class="content-card-title" style="margin-bottom: 1.5rem;" data-i18n="profile_sec">Update Password</h3>
+        <form id="password-update-form">
+          <div class="user-form-group">
+            <label class="user-form-label" data-i18n="label_pass">New Password</label>
+            <div style="position: relative;">
+              <input type="password" id="profile-password" class="user-form-input" data-i18n-placeholder="ph_new_pass" placeholder="Min 8 chars, 1 uppercase, 1 number" required minlength="8" style="padding-right: 40px;">
+              <span class="toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim);">👁️</span>
+            </div>
+          </div>
+          <div class="user-form-group">
+            <label class="user-form-label" data-i18n="label_confirm">Confirm Password</label>
+            <div style="position: relative;">
+              <input type="password" id="profile-confirm-password" class="user-form-input" data-i18n-placeholder="ph_confirm" placeholder="Confirm new password" required minlength="8" style="padding-right: 40px;">
+              <span class="toggle-password" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim);">👁️</span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" id="btn-update-password" style="width: 100%;" data-i18n="btn_update_pass">Update Password</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Factify<span class="logo-ai">AI</span></span>
+        <p class="footer-tagline">Verify before you believe.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/#hero">Home</a>
+        <a href="/#analyzer">Analyze</a>
+        <a href="/#live-news">Live News</a>
+        <a href="/#how-it-works">How It Works</a>
+        <a href="/#reviews">Reviews</a>
+        <a href="/#contact">Contact</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 Factify. Built with intelligence.</p>
+    </div>
+  </footer>
+
+  <!-- ============================================ -->
+  <!--  AUTHENTICATION MODALS -->
+  <!-- ============================================ -->
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="login-modal" style="display:none;">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h2>Welcome Back</h2>
+        <p>Login to your Factify account</p>
+        <button class="modal-close" id="login-modal-close">âœ•</button>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" class="form-input" data-i18n-placeholder="ph_email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Login</button>
+        <p class="modal-switch">Don't have an account? <a href="#" id="switch-to-signup">Sign Up</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal-overlay" id="signup-modal" style="display:none;">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <h2>Create Account</h2>
+        <p>Join Factify to save your verification history</p>
+        <button class="modal-close" id="signup-modal-close">âœ•</button>
+      </div>
+      <form id="signup-form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signup-name" class="form-input" data-i18n-placeholder="ph_name" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="signup-email" class="form-input" data-i18n-placeholder="ph_email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signup-password" class="form-input" placeholder="Min 6 characters" required
+            minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+        <p class="modal-switch">Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  AI CHATBOT ASSISTANT â€” Help ke liye bot -->
+  <!-- ============================================ -->
+  <div class="chatbot-toggle" id="chatbot-toggle">
+    <span>ðŸ¤–</span>
+  </div>
+  <div class="chatbot-window glass-card" id="chatbot-window" style="display:none;">
+    <div class="chatbot-header">
+      <span>ðŸ¤– Factify Assistant</span>
+      <button class="chatbot-close" id="chatbot-close">âœ•</button>
+    </div>
+    <div class="chatbot-messages" id="chatbot-messages">
+      <div class="chat-msg bot">Hi! I'm Factify. Ask me anything about fake news detection. ðŸ›¡ï¸</div>
+    </div>
+    <div class="chatbot-suggestions" id="chatbot-suggestions" style="display: none;">
+      <!-- Populated via JS -->
+    </div>
+    <div class="chatbot-input-wrapper">
+      <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Ask something..." />
+      <button class="chatbot-send" id="chatbot-send">âž¤</button>
+    </div>
+  </div>
+
+  <!-- JavaScript file link ki hai -->
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
+
+

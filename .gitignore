@@ -1,0 +1,73 @@
+# ====================================================================
+# Git Ignore Configuration - Factify AI Fake News Detector
+# ====================================================================
+
+# Environment Variables & Credentials
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+backend/venv/
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Datasets (Prevent uploading heavy CSV files)
+backend/dataset/*.csv
+backend/dataset/*.zip
+!backend/dataset/.gitkeep
+
+# Temporary Uploads & File Processing
+backend/temp_uploads/*
+!backend/temp_uploads/.gitkeep
+temp_uploads/
+
+# Model Weights & Pickled Artifacts (Uncomment if models should be generated locally)
+# *.pkl
+# backend/*.pkl
+
+# Distribution & Builds
+dist/
+build/
+*.egg-info/
+
+# Logs, Test Outputs & Scratch Dumps
+*.log
+npm-debug.log*
+yarn-debug.log*
+qa_results.json
+pdf_trace_output.txt
+found_text.txt
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+__MACOSX/
+*/__MACOSX/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
